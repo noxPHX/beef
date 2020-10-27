@@ -8,7 +8,7 @@
 beef:
     version: '0.5.0.0-alpha-pre'
     # More verbose messages (server-side)
-    debug: false
+    debug: true
     # More verbose messages (client-side)
     client_debug: false
     # Used for generating secure tokens
@@ -17,8 +17,8 @@ beef:
     # Credentials to authenticate in BeEF.
     # Used by both the RESTful API and the Admin interface
     credentials:
-        user:   "beef"
-        passwd: "beef"
+        user: 'stri'
+        passwd: 'STRI_SECU'
 
     # Interface / IP restrictions
     restrictions:
@@ -46,7 +46,7 @@ beef:
         # Host Name / Domain Name
         # If you want BeEF to be accessible via hostname or domain name (ie, DynDNS),
         #   set the public hostname below:
-        #public: ""      # public hostname/IP address
+        public: 'stri.wirenox.com'      # public hostname/IP address
 
         # Reverse Proxy / NAT
         # If you want BeEF to be accessible behind a reverse proxy or NAT,
@@ -69,7 +69,7 @@ beef:
 
         # Prefer WebSockets over XHR-polling when possible.
         websocket:
-            enable: false
+            enable: true
             port: 61985 # WS: good success rate through proxies
             # Use encrypted 'WebSocketSecure'
             # NOTE: works only on HTTPS domains and with HTTPS support enabled in BeEF
@@ -81,12 +81,12 @@ beef:
         # Imitate a specified web server (default root page, 404 default error page, 'Server' HTTP response header)
         web_server_imitation:
             enable: true
-            type: "apache" # Supported: apache, iis, nginx
+            type: "nginx" # Supported: apache, iis, nginx
             hook_404: false # inject BeEF hook in HTTP 404 responses
             hook_root: false # inject BeEF hook in the server home page
         # Experimental HTTPS support for the hook / admin / all other Thin managed web services
         https:
-            enable: false
+            enable: true
             # In production environments, be sure to use a valid certificate signed for the value
             # used in beef.http.public (the domain name of the server where you run BeEF)
             key: "beef_key.pem"
@@ -141,6 +141,10 @@ beef:
             enable: true
         proxy:
             enable: true
+            address: "0.0.0.0"
+            key: "fake_key.pem"
+            cert: "fake_cert.pem"
+            chain: "beef_chainonly.pem"
         network:
             enable: true
         metasploit:
@@ -148,4 +152,4 @@ beef:
         social_engineering:
             enable: true
         xssrays:
-            enable: true
+            enable: false

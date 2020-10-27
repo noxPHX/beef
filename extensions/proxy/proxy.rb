@@ -27,7 +27,9 @@ module BeEF
           # load certificate
           begin
             cert_file = @conf.get('beef.extension.proxy.cert')
+            chain_file = @conf.get('beef.extension.proxy.chain')
             cert = File.read(cert_file)
+            chain = File.read(chain_file)
             ssl_context.cert = OpenSSL::X509::Certificate.new(cert)
           rescue
             print_error "[Proxy] Could not load SSL certificate '#{cert_file}'"
@@ -41,6 +43,8 @@ module BeEF
           rescue
             print_error "[Proxy] Could not load SSL key '#{key_file}'"
           end
+
+          #ssl_context.add_certificate(OpenSSL::X509::Certificate.new(cert), OpenSSL::PKey::RSA.new(key), [OpenSSL::X509::Certificate.new(chain)])
 
           ssl_server = OpenSSL::SSL::SSLServer.new(@proxy_server, ssl_context)
           ssl_server.start_immediately = false
@@ -138,7 +142,7 @@ module BeEF
           # Wait for the HTTP response to be stored in the db.
           # TODO: re-implement this with EventMachine or with the Observer pattern.
           while H.find(http.id).has_ran != "complete"
-            sleep 0.5
+            sleep 0.3
           end
           @response = H.find(http.id)
           print_debug "[PROXY] <-- Response for request ##{@response.id} to [#{@response.path}] on domain [#{@response.domain}:#{@response.port}] correctly processed"

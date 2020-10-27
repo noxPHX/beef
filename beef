@@ -166,7 +166,7 @@ end
 # Connect to DB
 ActiveRecord::Base.logger = nil
 OTR::ActiveRecord.migrations_paths = [File.join('core', 'main', 'ar-migrations')]
-OTR::ActiveRecord.configure_from_hash!(adapter:'sqlite3', database:db_file)
+OTR::ActiveRecord.configure_from_hash!(adapter:'sqlite3', database:db_file, pool: 20, timeout: 7000)
 # Migrate (if required)
 context = ActiveRecord::Migration.new.migration_context
 if context.needs_migration?
