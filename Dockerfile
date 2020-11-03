@@ -10,7 +10,7 @@
 ###########################################################################################################
 
 # ---------------------------- Start of Builder 0 - Gemset Build ------------------------------------------
-FROM ruby:2.6.3-alpine AS builder
+FROM ruby:latest AS builder
 LABEL maintainer="Beef Project: github.com/beefproject/beef"
 
 # Install gems in parallel with 4 workers to expedite build process.=
@@ -22,8 +22,9 @@ RUN echo "gem: --no-ri --no-rdoc" > /etc/gemrc
 COPY . /beef
 
 # Add bundler/gem dependencies and then install 
-RUN apk add --no-cache git curl libcurl curl-dev ruby-dev libffi-dev make g++ gcc musl-dev zlib-dev sqlite-dev && \
-  bundle install --system --clean --no-cache --gemfile=/beef/Gemfile $BUNDLER_ARGS && \
+RUN apt-get update && \
+    apt-get install -y musl-dev && \
+  bundle install --system --gemfile=/beef/Gemfile $BUNDLER_ARGS && \
   # Temp fix for https://github.com/bundler/bundler/issues/6680
   rm -rf /usr/local/bundle/cache
 
@@ -35,11 +36,12 @@ RUN chmod -R a+r /usr/local/bundle
 
 
 # ---------------------------- Start of Builder 1 - Final Build ------------------------------------------
-FROM ruby:2.6.3-alpine
+FROM ruby:latest
 LABEL maintainer="Beef Project: github.com/beefproject/beef"
 
 # Create service account to run BeEF
-RUN adduser -h /beef -g beef -D beef
+RUN groupadd -g 1000 beef && \
+    useradd -r -u 1000 -g 1000 --create-home --home-dir /beef beef
 
 COPY . /beef
 
@@ -50,7 +52,8 @@ COPY --from=builder /usr/local/bundle /usr/local/bundle
 RUN chown -R beef:beef /beef
 
 # Install BeEF's runtime dependencies
-RUN apk add --no-cache curl git build-base openssl readline-dev zlib zlib-dev libressl-dev yaml-dev sqlite-dev sqlite libxml2-dev libxslt-dev autoconf libc6-compat ncurses5 automake libtool bison nodejs
+RUN apt-get update && \
+    apt-get install -y curl git build-essential openssl libreadline6-dev zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-0 libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev autoconf libc6-dev libncurses5-dev automake libtool bison nodejs libcurl4-openssl-dev gcc-8-base libgcc-8-dev
 
 WORKDIR /beef
 
