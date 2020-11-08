@@ -30,7 +30,7 @@ module BeEF
             chain_file = @conf.get('beef.extension.proxy.chain')
             cert = File.read(cert_file)
             chain = File.read(chain_file)
-            ssl_context.cert = OpenSSL::X509::Certificate.new(cert)
+            # ssl_context.cert = OpenSSL::X509::Certificate.new(cert)
           rescue
             print_error "[Proxy] Could not load SSL certificate '#{cert_file}'"
           end
@@ -39,12 +39,12 @@ module BeEF
           begin
             key_file = @conf.get('beef.extension.proxy.key')
             key = File.read(key_file)
-            ssl_context.key = OpenSSL::PKey::RSA.new(key)
+            # ssl_context.key = OpenSSL::PKey::RSA.new(key)
           rescue
             print_error "[Proxy] Could not load SSL key '#{key_file}'"
           end
 
-          #ssl_context.add_certificate(OpenSSL::X509::Certificate.new(cert), OpenSSL::PKey::RSA.new(key), [OpenSSL::X509::Certificate.new(chain)])
+          ssl_context.add_certificate(OpenSSL::X509::Certificate.new(cert), OpenSSL::PKey::RSA.new(key), [OpenSSL::X509::Certificate.new(chain)])
 
           ssl_server = OpenSSL::SSL::SSLServer.new(@proxy_server, ssl_context)
           ssl_server.start_immediately = false
